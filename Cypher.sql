@@ -1,4 +1,4 @@
-LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/articles.csv" AS csvLine
+LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/articles_201606211925.csv" AS csvLine
 CREATE (:Articles { 
 	article_id: toInt(csvLine.id), 
 	title: csvLine.title,
@@ -7,9 +7,16 @@ CREATE (:Articles {
 	year: csvLine.year
 	});
 
-CREATE INDEX ON :Signature(signature_id);
-CREATE INDEX ON :Signature(article_id);
-CREATE INDEX ON :Signature(author);
+CREATE INDEX ON :Articles(article_id);
+
+LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/articles_authors.csv" AS csvLine
+CREATE (:Authors { 
+	article_id: toInt(csvLine.id),
+	author: csvLine.author
+	});
+
+CREATE INDEX ON :Authors(article_id);
+
 
 MATCH (s1:Signature),(s2:Signature)
 WHERE s1.article_id = s2.article_id
