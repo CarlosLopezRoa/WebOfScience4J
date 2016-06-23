@@ -1,4 +1,4 @@
-LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/articles_201606211925.csv" AS csvLine
+LOAD CSV WITH HEADERS FROM "file:///articles_201606211925.csv" AS csvLine
 CREATE (:Articles { 
 	article_id: toInt(csvLine.id), 
 	title: csvLine.title,
@@ -9,7 +9,7 @@ CREATE (:Articles {
 
 CREATE INDEX ON :Articles(article_id);
 
-LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/authors_201606212001.csv" AS csvLine
+LOAD CSV WITH HEADERS FROM "file:///authors_201606212001.csv" AS csvLine
 CREATE (:Authors { 
 	author_id: toInt(csvLine.author_id),
 	author: csvLine.author
@@ -18,7 +18,7 @@ CREATE (:Authors {
 CREATE INDEX ON :Authors(author_id);
 
 
-LOAD CSV WITH HEADERS FROM "file:///home/ubuntu/neo4jdata/signature_201606212307.csv" AS csvLine
+LOAD CSV WITH HEADERS FROM "file:///signature_201606212307.csv" AS csvLine
 CREATE (:Signatures { 
 	signature_id: toInt(csvLine.signature_id),
 	article_id: toInt(csvLine.article_id),
@@ -33,18 +33,16 @@ CREATE INDEX ON :Signatures(author_id);
 MATCH (s:Signatures),(au:Authors)
 WHERE s.author_id = au.author_id
 CREATE (au)-[r:isAuthor]->(s)
-RETURN r
 ;
 
 MATCH (s:Signatures),(ar:Articles)
 WHERE s.article_id = ar.article_id
 CREATE (ar)-[r:isArticle]->(s)
-RETURN r
 ;
 
 MATCH (ar:Articles)-[:isArticle]-(s:Signatures)-[:isAuthor]-(au:Authors)
 WHERE ar.article_id=1
-RETURN *
+RETURN collect(au.author_id) as aulist
 limit 10
 ;
 
