@@ -41,10 +41,17 @@ CREATE (ar)-[r:isArticle]->(s)
 ;
 
 MATCH (ar:Articles)-[:isArticle]-(s:Signatures)-[:isAuthor]-(au:Authors)
-WHERE ar.article_id=1
-RETURN collect(au.author_id) as aulist
-limit 10
+WITH (ar.article_id) as article, collect(au.author_id) as authorlist
+MATCH (au1:Authors),(au2:Authors)
+WHERE au1.author_id in authorlist and au2.author_id in authorlist
+MERGE (au1)-[r:isCoauthor]-(au2)
 ;
+
+-- EOF
+
+MATCH (a1)-[r:isCoauthor]-(a2) RETURN count(r);
+
+MATCH (a1)-[r:isCoauthor]-(a2) DELETE r;
 
 
 MATCH (au1:Authors),(au2:Authors)
